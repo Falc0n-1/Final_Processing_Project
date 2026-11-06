@@ -3,7 +3,7 @@
  Final Processing Project
  TODO: Add brief description of final project here
  */
-
+import Sound;
 void setup() {
   size (600, 600);
 }
