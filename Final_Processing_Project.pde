@@ -1,17 +1,10 @@
 /*
  Ostap
  Final Processing Project
- TODO: Add brief description of final project here
+ Super Mario game
+ TODO: Fix coins
+ add more game levels 
  */
-/*
-  Super Mario-style Processing game
-  Controls:
-  A / D or LEFT / RIGHT = Move
-  SPACE or UP = Jump
-  ESC = Return to menu
-  R = Restart
-*/
-
 import processing.sound.*;
 
 PImage marioRight;
@@ -46,7 +39,6 @@ boolean hasWon = false;
 
 int score = 0;
 
-// Each platform is: x, y, width, height.
 float[][] platforms = {
   {0, 540, 600, 60},
   {125, 450, 125, 18},
@@ -54,7 +46,6 @@ float[][] platforms = {
   {455, 290, 105, 18}
 };
 
-// Each coin is: x, y, collected (0 = no, 1 = yes).
 float[][] coins = {
   {185, 415, 0},
   {350, 335, 0},
@@ -67,13 +58,12 @@ void setup() {
   textAlign(CENTER, CENTER);
   textSize(24);
 
-  // These files are inside the sketch's data folder.
   marioRight = loadImage("Mario_Running_Right.png");
   marioLeft = loadImage("Mario_Running_Left.png");
 
   jumpSound = new SoundFile(this, "moutchitos-mario-grabish-14183.mp3");
   coinSound = new SoundFile(this, "coin.mp3");
-  winSound = new SoundFile(this, "krnbeatz-8-bit-level-win-584217.mp3");
+  winSound = new SoundFile(this, "mori_sound-fx-done-trumpet-510841.mp3");
 }
 
 void draw() {
@@ -87,8 +77,6 @@ void draw() {
     drawWin();
   }
 }
-
-// ---------------- MENU ----------------
 
 void drawMenu() {
   drawSky();
@@ -124,8 +112,6 @@ void drawButton(float x, float y, float w, float h, String label) {
   text(label, x + w/2, y + h/2);
 }
 
-// ---------------- SETTINGS ----------------
-
 void drawSettings() {
   drawSky();
 
@@ -142,12 +128,9 @@ void drawSettings() {
   drawButton(200, 465, 200, 60, "BACK");
 }
 
-// ---------------- GAME ----------------
-
 void drawGame() {
   drawSky();
 
-  // Draw platforms and ground.
   noStroke();
   for (int i = 0; i < platforms.length; i++) {
     fill(135, 75, 35);
@@ -159,7 +142,6 @@ void drawGame() {
          platforms[i][2], 7);
   }
 
-  // Move horizontally.
   if (movingLeft) {
     playerX -= playerSpeed;
     facingRight = false;
@@ -171,7 +153,6 @@ void drawGame() {
 
   playerX = constrain(playerX, 0, width - PLAYER_W);
 
-  // Apply gravity and check landing from above.
   float oldBottom = playerY + PLAYER_H;
   velocityY += gravity;
   playerY += velocityY;
@@ -196,32 +177,6 @@ void drawGame() {
     }
   }
 
-  // Draw coins and collect them.
-  for (int i = 0; i < coins.length; i++) {
-    if (coins[i][2] == 0) {
-      float cx = coins[i][0];
-      float cy = coins[i][1];
-
-      fill(255, 210, 0);
-      stroke(210, 135, 0);
-      strokeWeight(2);
-      ellipse(cx, cy, 22, 22);
-      noStroke();
-
-      fill(255, 245, 130);
-      ellipse(cx - 4, cy - 4, 6, 6);
-
-      if (dist(playerX + PLAYER_W/2, playerY + PLAYER_H/2,
-               cx, cy) < 31) {
-        coins[i][2] = 1;
-        score++;
-        coinSound.stop();
-        coinSound.play();
-      }
-    }
-  }
-
-  // Finish flag.
   stroke(90, 55, 20);
   strokeWeight(5);
   line(565, 205, 565, 540);
@@ -229,14 +184,12 @@ void drawGame() {
   fill(255, 50, 50);
   triangle(565, 208, 565, 260, 525, 234);
 
-  // Draw the correct Mario direction.
   if (facingRight) {
     image(marioRight, playerX, playerY, PLAYER_W, PLAYER_H);
   } else {
     image(marioLeft, playerX, playerY, PLAYER_W, PLAYER_H);
   }
 
-  // HUD.
   fill(255);
   textSize(23);
   textAlign(LEFT, CENTER);
@@ -247,20 +200,17 @@ void drawGame() {
   textSize(14);
   text("Move: A/D or arrows     Jump: SPACE     Restart: R", 300, 575);
 
-  // Reach the flag to win.
   if (playerX + PLAYER_W >= 550) {
     screen = WIN;
     winSound.stop();
     winSound.play();
   }
 
-  // Fall protection.
+
   if (playerY > height + 100) {
     resetGame();
   }
 }
-
-// ---------------- WIN SCREEN ----------------
 
 void drawWin() {
   drawSky();
@@ -277,12 +227,9 @@ void drawWin() {
   drawButton(200, 455, 200, 60, "MAIN MENU");
 }
 
-// ---------------- BACKGROUND ----------------
-
 void drawSky() {
   background(100, 185, 255);
 
-  // Simple clouds.
   noStroke();
   fill(255);
   ellipse(100, 95, 65, 35);
@@ -293,8 +240,6 @@ void drawSky() {
   ellipse(440, 138, 65, 45);
   ellipse(470, 146, 65, 32);
 }
-
-// ---------------- GAME RESET ----------------
 
 void resetGame() {
   playerX = 35;
@@ -307,8 +252,6 @@ void resetGame() {
     coins[i][2] = 0;
   }
 }
-
-// ---------------- MOUSE ----------------
 
 void mousePressed() {
   if (screen == MENU) {
@@ -339,8 +282,6 @@ void mousePressed() {
     }
   }
 }
-
-// ---------------- KEYBOARD ----------------
 
 void keyPressed() {
   if (key == 'a' || key == 'A' || keyCode == LEFT) {
